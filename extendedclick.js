@@ -10,16 +10,21 @@
  * Created: 2008-10-01
  */
 
-// jquery methods
-$.fn.ctrlclick         = function(fn) { return this[fn ? "bind" : "trigger"]("ctrlclick", fn); };
-$.fn.shiftclick        = function(fn) { return this[fn ? "bind" : "trigger"]("shiftclick", fn); };
-$.fn.altclick          = function(fn) { return this[fn ? "bind" : "trigger"]("altclick", fn); };
-$.fn.ctrlaltclick      = function(fn) { return this[fn ? "bind" : "trigger"]("ctrlaltclick", fn); };
-$.fn.ctrlshiftclick    = function(fn) { return this[fn ? "bind" : "trigger"]("ctrlshiftclick", fn); };
-$.fn.altshiftclick     = function(fn) { return this[fn ? "bind" : "trigger"]("altshiftclick", fn); };
-$.fn.ctrlaltshiftclick = function(fn) { return this[fn ? "bind" : "trigger"]("ctrlaltshiftclick", fn); };
+// According to http://docs.jquery.com/Plugins/Authoring#Plugin_Methods,
+// having 8 different namespaces for this plugin is discouraged, so we comment this out.
+
+//$.fn.plainclick        = function(fn) { return this[fn ? "bind" : "trigger"]("plainclick", fn); };
+//$.fn.ctrlclick         = function(fn) { return this[fn ? "bind" : "trigger"]("ctrlclick", fn); };
+//$.fn.shiftclick        = function(fn) { return this[fn ? "bind" : "trigger"]("shiftclick", fn); };
+//$.fn.altclick          = function(fn) { return this[fn ? "bind" : "trigger"]("altclick", fn); };
+//$.fn.ctrlaltclick      = function(fn) { return this[fn ? "bind" : "trigger"]("ctrlaltclick", fn); };
+//$.fn.ctrlshiftclick    = function(fn) { return this[fn ? "bind" : "trigger"]("ctrlshiftclick", fn); };
+//$.fn.altshiftclick     = function(fn) { return this[fn ? "bind" : "trigger"]("altshiftclick", fn); };
+//$.fn.ctrlaltshiftclick = function(fn) { return this[fn ? "bind" : "trigger"]("ctrlaltshiftclick", fn); };
+
 
 // all event clicks share the same config
+$.event.special.plainclick        =
 $.event.special.ctrlclick         =
 $.event.special.altclick          =
 $.event.special.shiftclick        =
@@ -28,18 +33,16 @@ $.event.special.ctrlshiftclick    =
 $.event.special.altshiftclick     =
 $.event.special.ctrlaltshiftclick = {
 	setup: function() {
-		$.event.add(this, extendedClickEvents, extendedClickHandler, {});
+	    $.event.add(this, "click", extendedClickHandler, {});
 	},
 	teardown: function() {
-		$.event.remove(this, extendedClickEvents, extendedClickHandler);
+	    $.event.remove(this, "click", extendedClickHandler);
 	}
 };
 
-var extendedClickEvents = "click";
-
-
 // Big shared event handler
 function extendedClickHandler(event){
+    if(event.type==="click") {
 	if (event.ctrlKey)
 	{
 		if (event.shiftKey)
@@ -71,6 +74,11 @@ function extendedClickHandler(event){
 	{
 		event.type = "shiftclick"; // set to trigger
 	}
+	else
+	{
+		event.type = "plainclick"; // set to trigger
+	}
 	return $.event.handle.call(this, event);
+    }
 }
 })(jQuery);
